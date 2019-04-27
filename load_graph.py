@@ -36,10 +36,12 @@ def load_raw_data(pa_data, shp_file):
 
     # load GEOIDs for referencing with Shapefiles
     fid_from_geoid = {}
+    geoids = {}
     with open(pjoin(pa_data, "GEOID.txt")) as f:
         reader = csv.reader(f, delimiter="\t")
         for row in reader:
             fid_from_geoid[row[1].strip()] = int(row[0])
+            geoids[int(row[0])] = row[1].strip()
 
     # load shapes
     geometries = {}
@@ -55,10 +57,10 @@ def load_raw_data(pa_data, shp_file):
                     print(row)
                 i += 1
 
-    return areas, populations, neighbors, edge_lengths, geometries
+    return areas, populations, neighbors, edge_lengths, geoids, geometries
 
 def load_graph(pa_data, shp_file):
-    areas, populations, neighbors, edge_lengths, geometries = load_raw_data(pa_data, shp_file)
+    areas, populations, neighbors, edge_lengths, geoids, geometries = load_raw_data(pa_data, shp_file)
     # create node attribute dicts
     fids = []
     dictys = []
@@ -67,6 +69,7 @@ def load_graph(pa_data, shp_file):
         dicty['population'] = populations[fid]
         dicty['area'] = areas[fid]
         dicty['geometry'] = geometries[fid]
+        dicty['GEOID'] = geoids[fid]
         fids.append(fid)
         dictys.append(dicty)
 
