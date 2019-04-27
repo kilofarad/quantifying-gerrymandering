@@ -1,6 +1,10 @@
 import networkx as nx
 import csv, fiona
+from shapely.geometry import Polygon
 from os.path import join as pjoin
+
+def helper_flatten(iterable):
+    return iterable if type(iterable[0]) is tuple else helper_flatten(iterable[0])
 
 def load_raw_data(pa_data, shp_file):
     # load adjacency
@@ -46,17 +50,11 @@ def load_raw_data(pa_data, shp_file):
     # load shapes
     geometries = {}
     with fiona.open(shp_file) as f:
-        i = 0
         for row in f:
-            try:
-                geoid = row['properties']['GEOID10']
-                fid = fid_from_geoid[geoid]
-                geometries[fid] = row['geometry']
-            except KeyError:
-                if i == 0:
-                    print(row)
-                i += 1
-
+            geoid = row['properties']['GEOID10']
+            fid = fid_from_geoid[geoid]
+            #why this is  nested like this...
+            geometries[fid] = Polygon(helper_flatten(row['geometry']['coordinates']))
     return areas, populations, neighbors, edge_lengths, geoids, geometries
 
 def load_graph(pa_data, shp_file):
