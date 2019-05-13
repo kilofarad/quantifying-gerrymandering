@@ -5,6 +5,7 @@ from os.path import join as pjoin
 
 
 def helper_flatten(iterable):
+    """Helper function for loading shapefile data into shapely Polygons"""
     return iterable if type(iterable[0]) is tuple else helper_flatten(iterable[0])
 
 
