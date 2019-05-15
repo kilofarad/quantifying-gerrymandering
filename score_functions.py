@@ -69,3 +69,4 @@ def population_score(G, districts, population_total):
 
     for i in pops.values():
         score += pow(i / population_ideal - 1, 2)
+    return score
